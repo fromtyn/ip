@@ -23,8 +23,7 @@ public class Elden {
                 System.out.println("Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
                     System.out.print(i + 1 + ".");
-                    System.out.print("[" + tasks[i].getStatusIcon() + "] ");
-                    System.out.println(tasks[i].getDescription());
+                    tasks[i].printInformation();
                 }
                 System.out.println("____________________________________________________________");
 
@@ -39,7 +38,7 @@ public class Elden {
                         tasks[index - 1].markAsDone();
                         System.out.println("____________________________________________________________");
                         System.out.println(" Nice! I've marked this task as done:");
-                        System.out.println("[X] " + tasks[index - 1].getDescription());
+                        tasks[index - 1].printInformation();
                         System.out.println("____________________________________________________________");
                         continue;
                     }
@@ -48,7 +47,7 @@ public class Elden {
                         tasks[index - 1].markAsNotDone();
                         System.out.println("____________________________________________________________");
                         System.out.println(" OK, I've marked this task as not done yet:");
-                        System.out.println("[ ] " + tasks[index - 1].getDescription());
+                        tasks[index - 1].printInformation();
                         System.out.println("____________________________________________________________");
                         continue;
                     }
@@ -56,6 +55,58 @@ public class Elden {
 
                 }
 
+            }
+
+            if (parts[0].equals("todo")) {
+                String task = input.substring(5);
+                tasks[taskCount] = new Task(task);
+                tasks[taskCount].setToDos();
+
+                System.out.println("____________________________________________________________");
+                System.out.println("Got it. I've added this task:");
+                tasks[taskCount].printInformation();
+                taskCount++;
+                System.out.println("Now you have " + String.valueOf(taskCount) + " tasks in the list.");
+                System.out.println("____________________________________________________________");
+                continue;
+            }
+
+            if (parts[0].equals("deadline")) {
+                String task = input.substring(9);
+
+                String[] taskParts = task.split(" /by ");
+                String description = taskParts[0];
+                String time = taskParts[1];
+                tasks[taskCount] = new Task(description);
+                tasks[taskCount].setDeadline(time);
+
+                System.out.println("____________________________________________________________");
+                System.out.println("Got it. I've added this task:");
+                tasks[taskCount].printInformation();
+                taskCount++;
+                System.out.println("Now you have " + String.valueOf(taskCount) + " tasks in the list.");
+                System.out.println("____________________________________________________________");
+                continue;
+            }
+
+            if (parts[0].equals("event")) {
+                String task = input.substring(6);
+
+                String[] taskParts = task.split(" /from ");
+                String description = taskParts[0];
+                String[] timeParts = taskParts[1].split(" /to ");
+                String fromTime = timeParts[0];
+                String toTime = timeParts[1];
+                tasks[taskCount] = new Task(description);
+                tasks[taskCount].setEvent(fromTime, toTime);
+
+                System.out.println("____________________________________________________________");
+                System.out.println("Got it. I've added this task:");
+                tasks[taskCount].printInformation();
+                taskCount++;
+                System.out.println("Now you have " + String.valueOf(taskCount) + " tasks in the list.");
+                System.out.println("____________________________________________________________");
+                continue;
             }
 
 
