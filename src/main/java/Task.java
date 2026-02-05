@@ -65,13 +65,9 @@ public class Task {
         String time;
         if (hasDeadlines) {
             time = "(by: " + deadlineTime + ")";
-        }
-
-        else if (isEvent) {
+        } else if (isEvent) {
             time = "(from: " + eventFrom + " " + "to: " + eventTo + ")";
-        }
-
-        else {
+        } else {
             time = "";
         }
 

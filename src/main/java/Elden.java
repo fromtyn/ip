@@ -11,7 +11,7 @@ public class Elden {
         Task[] tasks = new Task[100];
         int taskCount = 0;
 
-        while(true) {
+        while (true) {
             String input = in.nextLine();
 
             if (input.equals("bye")) {
@@ -41,9 +41,7 @@ public class Elden {
                         tasks[index - 1].printInformation();
                         System.out.println("____________________________________________________________");
                         continue;
-                    }
-
-                    else {
+                    } else {
                         tasks[index - 1].markAsNotDone();
                         System.out.println("____________________________________________________________");
                         System.out.println(" OK, I've marked this task as not done yet:");
