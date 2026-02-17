@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Elden {
     public static void main(String[] args) {
@@ -8,7 +9,7 @@ public class Elden {
         printLine();
 
         Scanner in = new Scanner(System.in);
-        Task[] tasks = new Task[100];
+        ArrayList<Task> tasks = new ArrayList<>();
         int taskCount = 0;
 
         while (true) {
@@ -28,7 +29,7 @@ public class Elden {
                     System.out.println("Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
                         System.out.print(i + 1 + ".");
-                        tasks[i].printInformation();
+                        tasks.get(i).printInformation();
                     }
                     printLine();
 
@@ -36,14 +37,13 @@ public class Elden {
                 }
 
                 String[] parts = input.split(" ");
-                String command = parts[0];
 
-                if (command.equals("mark") || command.equals("unmark")) {
+                if (parts[0].equals("mark") || parts[0].equals("unmark")) {
                     if (parts.length < 2) {
-                        throw new EldenException("Missing task number. Usage: " + command + " <taskNumber>");
+                        throw new EldenException("Missing task number. Usage: " + parts[0] + " <taskNumber>");
                     }
                     if (parts.length > 2) {
-                        throw new EldenException("Too many arguments. Usage: " + command + " <taskNumber>");
+                        throw new EldenException("Too many arguments. Usage: " + parts[0] + " <taskNumber>");
                     }
 
                     int index;
@@ -57,17 +57,17 @@ public class Elden {
                         throw new EldenException("Task number out of range.");
                     }
 
-                    if (command.equals("mark")) {
-                        tasks[index - 1].markAsDone();
+                    if (parts[0].equals("mark")) {
+                        tasks.get(index - 1).markAsDone();
                         printLine();
                         System.out.println("Nice! I've marked this task as done:");
-                        tasks[index - 1].printInformation();
+                        tasks.get(index - 1).printInformation();
                         printLine();
                     } else {
-                        tasks[index - 1].markAsNotDone();
+                        tasks.get(index - 1).markAsNotDone();
                         printLine();
                         System.out.println("OK, I've marked this task as not done yet:");
-                        tasks[index - 1].printInformation();
+                        tasks.get(index - 1).printInformation();
                         printLine();
                     }
                     continue;
@@ -79,8 +79,9 @@ public class Elden {
                     }
 
                     String task = input.substring(5);
-                    tasks[taskCount] = new Task(task);
-                    tasks[taskCount].setToDos();
+                    Task newTask = new Task(task);
+                    newTask.setToDos();
+                    tasks.add(newTask);
 
                     printNewTask(taskCount, tasks);
                     taskCount++;
@@ -103,8 +104,9 @@ public class Elden {
                     if (time.isEmpty()) {
                         throw new EldenException("The /by time of a deadline cannot be empty.");
                     }
-                    tasks[taskCount] = new Task(description);
-                    tasks[taskCount].setDeadline(time);
+                    Task newTask = new Task(description);
+                    newTask.setDeadline(time);
+                    tasks.add(newTask);
 
                     printNewTask(taskCount, tasks);
                     taskCount++;
@@ -134,11 +136,42 @@ public class Elden {
                     if (toTime.isEmpty()) {
                         throw new EldenException("The /to time of an event cannot be empty.");
                     }
-                    tasks[taskCount] = new Task(description);
-                    tasks[taskCount].setEvent(fromTime, toTime);
+                    Task newTask = new Task(description);
+                    newTask.setEvent(fromTime, toTime);
+                    tasks.add(newTask);
 
                     printNewTask(taskCount, tasks);
                     taskCount++;
+                    continue;
+                }
+
+                if (parts[0].equals("delete")) {
+                    if (parts.length < 2) {
+                        throw new EldenException("Missing task number. Usage: " + parts[0] + " <taskNumber>");
+                    }
+                    if (parts.length > 2) {
+                        throw new EldenException("Too many arguments. Usage: " + parts[0] + " <taskNumber>");
+                    }
+
+                    int index;
+                    try {
+                        index = Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException e) {
+                        throw new EldenException("Task number must be a valid integer.");
+                    }
+
+                    if (index < 1 || index > taskCount) {
+                        throw new EldenException("Task number out of range.");
+                    }
+
+                    printLine();
+                    System.out.println("Noted. I've removed this task:");
+                    tasks.get(index - 1).printInformation();
+                    tasks.remove(index - 1);
+                    taskCount--;
+                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    printLine();
+
                     continue;
                 }
 
@@ -160,10 +193,10 @@ public class Elden {
         System.out.println("____________________________________________________________");
     }
     
-    private static void printNewTask(int taskCount, Task[] tasks) {
+    private static void printNewTask(int taskCount, ArrayList<Task> tasks) {
         printLine();
         System.out.println("Got it. I've added this task:");
-        tasks[taskCount].printInformation();
+        tasks.get(taskCount).printInformation();
         System.out.println("Now you have " + (taskCount + 1) + " tasks in the list.");
         printLine();
     }
