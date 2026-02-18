@@ -17,7 +17,6 @@ public class Elden {
 
         Scanner in = new Scanner(System.in);
         ArrayList<Task> tasks = loadTasks();
-        int taskCount = 0;
 
 
         while (true) {
@@ -35,7 +34,7 @@ public class Elden {
                 if (input.equals("list")) {
                     printLine();
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
+                    for (int i = 0; i < tasks.size(); i++) {
                         System.out.print(i + 1 + ".");
                         tasks.get(i).printInformation();
                     }
@@ -61,7 +60,7 @@ public class Elden {
                         throw new EldenException("Task number must be a valid integer.");
                     }
 
-                    if (index < 1 || index > taskCount) {
+                    if (index < 1 || index > tasks.size()) {
                         throw new EldenException("Task number out of range.");
                     }
 
@@ -93,8 +92,7 @@ public class Elden {
                     newTask.setToDos();
                     tasks.add(newTask);
 
-                    printNewTask(taskCount, tasks);
-                    taskCount++;
+                    printNewTask(tasks);
 
                     saveTasks(tasks);
                     continue;
@@ -120,8 +118,7 @@ public class Elden {
                     newTask.setDeadline(time);
                     tasks.add(newTask);
 
-                    printNewTask(taskCount, tasks);
-                    taskCount++;
+                    printNewTask(tasks);
 
                     saveTasks(tasks);
                     continue;
@@ -154,8 +151,7 @@ public class Elden {
                     newTask.setEvent(fromTime, toTime);
                     tasks.add(newTask);
 
-                    printNewTask(taskCount, tasks);
-                    taskCount++;
+                    printNewTask(tasks);
 
                     saveTasks(tasks);
                     continue;
@@ -176,7 +172,7 @@ public class Elden {
                         throw new EldenException("Task number must be a valid integer.");
                     }
 
-                    if (index < 1 || index > taskCount) {
+                    if (index < 1 || index > tasks.size()) {
                         throw new EldenException("Task number out of range.");
                     }
 
@@ -184,8 +180,7 @@ public class Elden {
                     System.out.println("Noted. I've removed this task:");
                     tasks.get(index - 1).printInformation();
                     tasks.remove(index - 1);
-                    taskCount--;
-                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     printLine();
 
                     saveTasks(tasks);
@@ -210,11 +205,11 @@ public class Elden {
         System.out.println("____________________________________________________________");
     }
     
-    private static void printNewTask(int taskCount, ArrayList<Task> tasks) {
+    private static void printNewTask(ArrayList<Task> tasks) {
         printLine();
         System.out.println("Got it. I've added this task:");
-        tasks.get(taskCount).printInformation();
-        System.out.println("Now you have " + (taskCount + 1) + " tasks in the list.");
+        tasks.get(tasks.size() - 1).printInformation();
+        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
         printLine();
     }
 
