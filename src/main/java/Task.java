@@ -8,6 +8,19 @@ public class Task {
     protected String eventFrom;
     protected String eventTo;
 
+    public String getDescription() { return description; }
+    public boolean isDone() { return isDone; }
+    public String getDeadlineTime() { return deadlineTime; }
+    public String getEventFrom() { return eventFrom; }
+    public String getEventTo() { return eventTo; }
+
+    public String getSaveType() {
+        if (isToDos) return "T";
+        if (hasDeadlines) return "D";
+        if (isEvent) return "E";
+        return "T";
+    }
+
     public Task(String description) {
         this.description = description;
         this.isDone = false;
