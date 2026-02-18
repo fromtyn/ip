@@ -1,7 +1,14 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class Elden {
+    private static final String SAVE_PATH = "data/elden.txt";
+
     public static void main(String[] args) {
         printLine();
         System.out.println("Hello! I'm Elden");
@@ -9,8 +16,9 @@ public class Elden {
         printLine();
 
         Scanner in = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = loadTasks();
         int taskCount = 0;
+
 
         while (true) {
             String input = in.nextLine();
@@ -70,6 +78,8 @@ public class Elden {
                         tasks.get(index - 1).printInformation();
                         printLine();
                     }
+
+                    saveTasks(tasks);
                     continue;
                 }
 
@@ -85,6 +95,8 @@ public class Elden {
 
                     printNewTask(taskCount, tasks);
                     taskCount++;
+
+                    saveTasks(tasks);
                     continue;
                 }
 
@@ -110,6 +122,8 @@ public class Elden {
 
                     printNewTask(taskCount, tasks);
                     taskCount++;
+
+                    saveTasks(tasks);
                     continue;
                 }
 
@@ -142,6 +156,8 @@ public class Elden {
 
                     printNewTask(taskCount, tasks);
                     taskCount++;
+
+                    saveTasks(tasks);
                     continue;
                 }
 
@@ -172,6 +188,7 @@ public class Elden {
                     System.out.println("Now you have " + taskCount + " tasks in the list.");
                     printLine();
 
+                    saveTasks(tasks);
                     continue;
                 }
 
@@ -200,4 +217,100 @@ public class Elden {
         System.out.println("Now you have " + (taskCount + 1) + " tasks in the list.");
         printLine();
     }
+
+    private static ArrayList<Task> loadTasks() {
+        Path path = Paths.get(SAVE_PATH);
+        try {
+            Path parent = path.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+
+            if (!Files.exists(path)) {
+                return new ArrayList<>();
+            }
+
+            List<String> lines = Files.readAllLines(path);
+            ArrayList<Task> tasks = new ArrayList<>();
+
+            for (String line : lines) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty()) continue;
+
+                try {
+                    tasks.add(parseTaskLine(trimmed));
+                } catch (EldenException e) {
+                    System.out.println("Warning: skipping corrupted line: " + trimmed);
+                }
+            }
+            return tasks;
+
+        } catch (IOException e) {
+            System.out.println("Warning: failed to load save file. Starting empty.");
+            return new ArrayList<>();
+        }
+    }
+
+    private static void saveTasks(ArrayList<Task> tasks) throws EldenException {
+        Path path = Paths.get(SAVE_PATH);
+        try {
+            Path parent = path.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+
+            ArrayList<String> lines = new ArrayList<>();
+            for (Task t : tasks) {
+                String type = t.getSaveType();
+                String done = t.isDone() ? "1" : "0";
+                String desc = t.getDescription();
+
+                if (type.equals("T")) {
+                    lines.add("T | " + done + " | " + desc);
+                } else if (type.equals("D")) {
+                    lines.add("D | " + done + " | " + desc + " | " + t.getDeadlineTime());
+                } else { // E
+                    lines.add("E | " + done + " | " + desc + " | " + t.getEventFrom() + " | " + t.getEventTo());
+                }
+            }
+
+            Files.write(path, lines);
+
+        } catch (IOException e) {
+            throw new EldenException("Failed to save tasks: " + e.getMessage());
+        }
+    }
+
+    private static Task parseTaskLine(String line) throws EldenException {
+        String[] p = line.split("\\s*\\|\\s*");
+        if (p.length < 3) throw new EldenException("Corrupted line");
+
+        String type = p[0].trim();
+        String doneStr = p[1].trim();
+        String desc = p[2].trim();
+
+        if (!(doneStr.equals("0") || doneStr.equals("1"))) throw new EldenException("Corrupted line");
+        if (desc.isEmpty()) throw new EldenException("Corrupted line");
+
+        Task t = new Task(desc);
+        if (doneStr.equals("1")) t.markAsDone();
+
+        if (type.equals("T")) {
+            t.setToDos();
+            return t;
+        }
+        if (type.equals("D")) {
+            if (p.length < 4 || p[3].trim().isEmpty()) throw new EldenException("Corrupted line");
+            t.setDeadline(p[3].trim());
+            return t;
+        }
+        if (type.equals("E")) {
+            if (p.length < 5 || p[3].trim().isEmpty() || p[4].trim().isEmpty()) throw new EldenException("Corrupted line");
+            t.setEvent(p[3].trim(), p[4].trim());
+            return t;
+        }
+
+        throw new EldenException("Corrupted line");
+    }
+
 }
