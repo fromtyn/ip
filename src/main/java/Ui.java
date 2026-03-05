@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Scanner;
 
 public class Ui {
@@ -63,5 +64,13 @@ public class Ui {
     public void showUnmarked(Task task) {
         System.out.println("OK, I've marked this task as not done yet:");
         task.printInformation();
+    }
+
+    public void showMatchingTasks(List<Task> matchingTasks) {
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            System.out.print((i + 1) + ".");
+            matchingTasks.get(i).printInformation();
+        }
     }
 }
