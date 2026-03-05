@@ -44,6 +44,12 @@ public class Parser {
         case "event":
             return parseEvent(arguments);
 
+        case "find":
+            if (arguments.isEmpty()) {
+                throw new EldenException("The keyword of a find command cannot be empty.");
+            }
+            return new FindCommand(arguments);
+
         default:
             throw new EldenException("OOPS!!! I'm sorry, but I don't know what that means :-(");
         }
