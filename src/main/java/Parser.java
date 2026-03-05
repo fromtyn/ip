@@ -1,5 +1,15 @@
+/**
+ * Parses the raw user input into different command objects.
+ */
 public class Parser {
 
+    /**
+     * Parses the full command string and returns the matching command.
+     *
+     * @param fullCommand full command entered by the user
+     * @return the command object created from the input
+     * @throws EldenException if the input command is invalid
+     */
     public static Command parse(String fullCommand) throws EldenException {
         if (fullCommand == null || fullCommand.trim().isEmpty()) {
             throw new EldenException("Input cannot be empty.");
@@ -55,6 +65,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a task number for commands like mark, unmark and delete.
+     *
+     * @param arguments argument part after the command word
+     * @param commandWord current command word
+     * @return the task number entered by the user
+     * @throws EldenException if the task number is missing or invalid
+     */
     private static int parseTaskNumber(String arguments, String commandWord) throws EldenException {
         if (arguments.isEmpty()) {
             throw new EldenException("Missing task number. Usage: " + commandWord + " <taskNumber>");
@@ -72,6 +90,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a deadline command and creates a DeadlineCommand object.
+     *
+     * @param arguments argument part after the command word
+     * @return the parsed deadline command
+     * @throws EldenException if the deadline format is wrong
+     */
     private static Command parseDeadline(String arguments) throws EldenException {
         String[] parts = arguments.split("\\s*/by\\s*", 2);
         if (parts.length < 2) {
@@ -92,6 +117,13 @@ public class Parser {
         return new DeadlineCommand(description, by);
     }
 
+    /**
+     * Parses an event command and creates an EventCommand object.
+     *
+     * @param arguments argument part after the command word
+     * @return the parsed event command
+     * @throws EldenException if the event format is wrong
+     */
     private static Command parseEvent(String arguments) throws EldenException {
         String[] firstSplit = arguments.split("\\s*/from\\s*", 2);
         if (firstSplit.length < 2) {

@@ -5,13 +5,27 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles loading tasks from file and saving tasks back to file.
+ */
 public class Storage {
     private final Path filePath;
 
+    /**
+     * Creates a Storage object using the given file path.
+     *
+     * @param filePath path of the save file
+     */
     public Storage(String filePath) {
         this.filePath = Paths.get(filePath);
     }
 
+    /**
+     * Loads all tasks from the save file.
+     *
+     * @return list of tasks loaded from file
+     * @throws EldenException if there is an error while reading the file
+     */
     public ArrayList<Task> load() throws EldenException {
         try {
             Path parent = filePath.getParent();
@@ -46,6 +60,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Saves all tasks to the save file.
+     *
+     * @param tasks current task list
+     * @throws EldenException if there is an error while writing the file
+     */
     public void save(TaskList tasks) throws EldenException {
         try {
             Path parent = filePath.getParent();
@@ -65,6 +85,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Converts a task object into one line for saving.
+     *
+     * @param t task to be converted
+     * @return one line string in save file format
+     */
     private String convertTaskToLine(Task t) {
         String type = t.getSaveType();
         String done = t.isDone() ? "1" : "0";
@@ -79,6 +105,13 @@ public class Storage {
         }
     }
 
+    /**
+     * Parses one line from the save file and turns it into a task object.
+     *
+     * @param line one line read from the save file
+     * @return the task created from that line
+     * @throws EldenException if the saved line format is corrupted
+     */
     private Task parseTaskLine(String line) throws EldenException {
         String[] p = line.split("\\s*\\|\\s*");
         if (p.length < 3) {
